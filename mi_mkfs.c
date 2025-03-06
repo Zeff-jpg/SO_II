@@ -3,15 +3,14 @@ Alejandro Masmiquel Casado
 Carlos López Mihi
 *****
 */
-
 #include "fichero_basico.h"
+
+int initSB(unsigned int nbloques, unsigned int ninodos);
 
 int main(int argc, char **argv){
 
-  
-  printf("%lu", sizeof( struct superbloque));
-
-
+    
+    
     //obtenemos el número de bloques //
     int nbloques = atoi(argv[2]);
 
@@ -23,7 +22,12 @@ int main(int argc, char **argv){
     memset(buff, 0, BLOCKSIZE);
 
     //montamos nuestro disco// 
-    bmount(argv[1]);
+    if(bmount(argv[1])==FALLO){
+        perror(RED "Error al montar el disco");
+        printf(RESET);
+        return FALLO;
+
+    };
 
     //Inicializamos los bloques en el disco virtual//
     for (size_t i = 0; i < nbloques; i++)
@@ -33,6 +37,8 @@ int main(int argc, char **argv){
   
     //inicializamos el superbloque//
     initSB(nbloques,ninodos);
+    initAI();
+    initMB();
 
     //Desmontamos el disco//
     bumount();

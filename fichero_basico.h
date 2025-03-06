@@ -8,6 +8,14 @@ Carlos López Mihi
 #define posSB 0 // el superbloque se escribe en el primer bloque de nuestro FS
 #define tamSB 1
 #define INODOSIZE 128 // tamaño en bytes de un inodo
+#include <limits.h>
+int tamAI(unsigned int ninodos);
+int initSB(unsigned int nbloques, unsigned int ninodos);
+int initMB();
+int initAI();
+
+
+
 
 struct superbloque {
     unsigned int posPrimerBloqueMB;          // Posición absoluta del primer bloque del mapa de bits
@@ -63,5 +71,3 @@ struct superbloque {
     // Fijarse que también se resta lo que ocupen las variables de alineación utilizadas!!!
  };
  
- int tamAI(unsigned int ninodos);
- int initSB(unsigned int nbloques, unsigned int ninodos);
