@@ -262,6 +262,98 @@ int initAI()
     return 0;
 }
 
+int escribir_bit(unsigned int nbloque, unsigned int bit)
+{
+
+    struct superbloque SB;
+    unsigned char bufferMB[BLOCKSIZE];
+
+    // leemos el superbloque //
+    if (bread(posSB, &SB) == FALLO)
+    {
+        perror(RED "Error");
+        printf(RESET);
+        return FALLO;
+    }
+
+    int posbyte = nbloque / 8;
+    int posbit = nbloque % 8;
+    int nbloqueMB = posbyte / BLOCKSIZE;
+    int nbloqueabs = SB.posPrimerBloqueMB + nbloqueMB;
+
+    // leemos el byte del mapa de bits//
+    if (bread(nbloqueabs, bufferMB) == FALLO)
+    {
+
+        perror(RED "Error al leer byte ");
+        printf(RESET);
+        return FALLO;
+    }
+
+    // actualizamos la posicion de byte//
+    posbyte = posbyte % BLOCKSIZE;
+
+    unsigned char mascara = 128; // 10000000
+    mascara >>= posbit;          // desplazamiento de bits a la derecha
+
+    if (bit == 1)
+    {
+        bufferMB[posbyte] |= mascara; // ponemos bit a 1
+    }
+    else
+    {
+        bufferMB[posbyte] &= ~mascara; // ponemos bit a 0
+    }
+
+    // escribimos el byte modificado en el disco virtual//
+    if (bwrite(nbloqueabs, bufferMB) == FALLO)
+    {
+
+        perror(RED "Error al escribir byte en disco virtual");
+        printf(RESET);
+        return FALLO;
+    }
+
+    return 0;
+}
+
+char leer_bit(unsigned int nbloque)
+{
+
+    // repetimos proceso como en escribir bit//
+    struct superbloque SB;
+    unsigned char bufferMB[BLOCKSIZE];
+
+    // leemos el superbloque //
+    if (bread(posSB, &SB) == FALLO)
+    {
+        perror(RED "Error");
+        printf(RESET);
+        return FALLO;
+    }
+
+    int posbyte = nbloque / 8;
+    int posbit = nbloque % 8;
+    int nbloqueMB = posbyte / BLOCKSIZE;
+    int nbloqueabs = SB.posPrimerBloqueMB + nbloqueMB;
+
+    // leemos el byte del Mapa de bits //
+    if (bread(nbloqueabs, bufferMB) == FALLO)
+    {
+
+        perror(RED "Error al leer byte ");
+        printf(RESET);
+        return FALLO;
+    }
+
+    unsigned char mascara = 128;  // 10000000
+    mascara >>= posbit;           // desplazamiento de bits a la derecha, los que indique posbit
+    mascara &= bufferMB[posbyte]; // operador AND para bits
+    mascara >>= (7 - posbit);     // desplazamiento de bits a la derecha
+                                  // para dejar el 0 o 1 en el extremo derecho y leerlo en decimal
+    return mascara;
+}
+
 // Funcion que devuelve valor decimal de los bits sobrantes//
 int bitSobrantes(int n)
 {
