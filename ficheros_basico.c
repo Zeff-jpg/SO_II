@@ -5,7 +5,7 @@ Carlos López Mihi
 */
 #include "fichero_basico.h"
 
-int bitSobrantes(int n); //Funcion que devuelve valor decimal de los bits sobrantes//
+int bitSobrantes(int n); // Funcion que devuelve valor decimal de los bits sobrantes//
 
 /*Función que devuelve en numero de bloques necesarios para el Mapa de Bits */
 int tamMB(unsigned int nbloques)
@@ -38,7 +38,6 @@ int tamAI(unsigned int ninodos)
         return tamAI + 1;
     }
 }
-
 
 /*Función para inicializar el super bloque*/
 int initSB(unsigned int nbloques, unsigned int ninodos)
@@ -86,12 +85,9 @@ int initSB(unsigned int nbloques, unsigned int ninodos)
         printf(RESET);
         return FALLO;
     };
-    
 
     return 0;
 }
-
-
 
 int initMB()
 {
@@ -112,7 +108,7 @@ int initMB()
     int bloquesMetadatos = tamMB(SB.totBloques) + tamAI(SB.totInodos) + tamSB;
 
     // bloques completos del mapa de bits a poner a 1 //
-    int bloques1 = bloquesMetadatos / 8 / 1024;
+    int bloques1 = bloquesMetadatos / 8 / BLOCKSIZE;
 
     // cantidad de bytes a poner a 1 //
     int bytes1 = bloquesMetadatos / 8;
@@ -126,9 +122,6 @@ int initMB()
         // posicion de los bloques a poner a 1//
         int posBloquesMB = SB.posPrimerBloqueMB;
 
-        // cantidad de bytes a poner a 1 del bloque incompleto //
-        int bytes1 = (bloquesMetadatos % 8);
-
         // ponemos a 1 todos los bloques //
         for (int i = 0; i < bloques1; i++)
         {
@@ -138,26 +131,29 @@ int initMB()
                 printf(RESET);
                 return FALLO;
             }
-
-           
+            // Actualizamos los bloques libres del SB//
+            SB.cantBloquesLibres -= BLOCKSIZE * 8;
+            //actualizamos los bytes sobrantes a poner a 1//
+            bytes1 -= BLOCKSIZE;
         }
-         // limpiamos el buffer//
+
+        // limpiamos el buffer//
         memset(bufferMB, 0, BLOCKSIZE);
 
         // preparamos el buffer con los bytes necesarios a 1//
         for (int i = 0; i < bytes1; i++)
         {
             bufferMB[i] = 255;
-            
-        //Actualizamos los bloques libres del SB -> 8 bits/bloques por cada byte escrito//
-        SB.cantBloquesLibres-=8;
+            // Actualizamos los bloques libres del SB -> 8 bits/bloques por cada byte escrito//
+            SB.cantBloquesLibres -= 8;
         }
 
-        if(bloquesMetadatos%8 != 0){
-            bufferMB[bytes1] = bitSobrantes(bloquesMetadatos%8); 
+        if (bloquesMetadatos % 8 != 0)
+        {
+            bufferMB[bytes1] = bitSobrantes(bloquesMetadatos % 8);
 
-            //Actualizamos los bloques libres del SB//
-            SB.cantBloquesLibres-=(bloquesMetadatos%8); 
+            // Actualizamos los bloques libres del SB//
+            SB.cantBloquesLibres -= (bloquesMetadatos % 8);
         }
 
         // ponemos a 1 los bytes del bloque incompleto//
@@ -167,50 +163,47 @@ int initMB()
             printf(RESET);
             return FALLO;
         }
-        
-
     }
     else
     { // No llega a 1 bloque del mapa de bits
 
-         // limpiamos el buffer//
-         memset(bufferMB, 0, BLOCKSIZE);
+        // limpiamos el buffer//
+        memset(bufferMB, 0, BLOCKSIZE);
 
-         // preparamos el buffer con los bytes necesarios a 1//
-         for (int i = 0; i < bytes1; i++)
-         {
-             bufferMB[i] = 255;
+        // preparamos el buffer con los bytes necesarios a 1//
+        for (int i = 0; i < bytes1; i++)
+        {
+            bufferMB[i] = 255;
 
-            //Actualizamos los bloques libres del SB -> 8 bits/bloques por cada byte escrito//
-            SB.cantBloquesLibres-=8;
-         }
- 
-         if(bloquesMetadatos%8 != 0){
-             bufferMB[bytes1] = bitSobrantes(bloquesMetadatos%8);
+        // Actualizamos los bloques libres del SB -> 8 bits/bloques por cada byte escrito//
+        SB.cantBloquesLibres -= 8;
+        }
 
-             //Actualizamos los bloques libres del SB//
-            SB.cantBloquesLibres-=(bloquesMetadatos%8); 
- 
-         }
- 
-         // ponemos a 1 los bytes del bloque incompleto//
-         if (bwrite(SB.posPrimerBloqueMB, bufferMB) == FALLO)
-         {
-             perror(RED "Error al inicializar bloques ocupados en el MB");
-             printf(RESET);
-             return FALLO;
-         }
-        
+        if (bloquesMetadatos % 8 != 0)
+        {
+            bufferMB[bytes1] = bitSobrantes(bloquesMetadatos % 8);
+            
+            // Actualizamos los bloques libres del SB//
+            SB.cantBloquesLibres -= (bloquesMetadatos % 8);
+        }
+
+        // ponemos a 1 los bytes del bloque incompleto//
+        if (bwrite(SB.posPrimerBloqueMB, bufferMB) == FALLO)
+        {
+            perror(RED "Error al inicializar bloques ocupados en el MB");
+            printf(RESET);
+            return FALLO;
+        }
     }
 
-    
- if (bwrite(posSB, &SB) == FALLO)
-         {
-             perror(RED "Error al actualuzar datos del SB");
-             printf(RESET);
-             return FALLO;
-         }
- return 0;
+    // Actualizamos los cambios en el SB//
+    if (bwrite(posSB, &SB) == FALLO)
+    {
+        perror(RED "Error al actualuzar datos del SB");
+        printf(RESET);
+        return FALLO;
+    }
+    return 0;
 }
 
 /*Funcion para inicializar el array de inodos*/
@@ -263,20 +256,19 @@ int initAI()
             perror(RED "Error al escribir AI en el SB");
             printf(RESET);
             return FALLO;
-        } 
-
+        }
     }
-    
+
     return 0;
 }
 
-
-//Funcion que devuelve valor decimal de los bits sobrantes//
-int bitSobrantes(int n){
- int sol;
-    for(int i = 7; n > 0;n-- ){
-        sol += 2^i;
-
+// Funcion que devuelve valor decimal de los bits sobrantes//
+int bitSobrantes(int n)
+{
+    int sol;
+    for (int i = 7; n > 0; n--)
+    {
+        sol += 2 ^ i;
     }
-return sol; 
+    return sol;
 }
