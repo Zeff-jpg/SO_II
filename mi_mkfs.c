@@ -35,12 +35,17 @@ int main(int argc, char **argv){
         bwrite(i,buff);
     }
   
-    //inicializamos el superbloque//
+    //inicializamos el superbloque, Array de inodos y Mapa de bits //
     initSB(nbloques,ninodos);
     initAI();
     initMB();
 
+    //Reservamos un inodo
+    reservar_inodo ('d', 7);
+
+   
     //Desmontamos el disco//
     bumount();
     return 0;
+
 }

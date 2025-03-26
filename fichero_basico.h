@@ -4,18 +4,13 @@ Carlos López Mihi
 *****
 */
 #include "bloques.h"
-
+#include <time.h>
 #define posSB 0 // el superbloque se escribe en el primer bloque de nuestro FS
 #define tamSB 1
 #define INODOSIZE 128 // tamaño en bytes de un inodo
 #include <limits.h>
-int tamAI(unsigned int ninodos);
-int initSB(unsigned int nbloques, unsigned int ninodos);
-int initMB();
-int initAI();
 
-
-
+////////////////////////////////*STRUCTS*////////////////////////////////
 
 struct superbloque {
     unsigned int posPrimerBloqueMB;          // Posición absoluta del primer bloque del mapa de bits
@@ -71,3 +66,17 @@ struct superbloque {
     // Fijarse que también se resta lo que ocupen las variables de alineación utilizadas!!!
  };
  
+////////////////////////////////*FUNCIONES*////////////////////////////////
+
+int tamAI(unsigned int ninodos); //Función que calcula el tamaño del array de inodos
+int tamMB(unsigned int nbloques);//Función que calcula el tamaño del  mapa de bits
+int initSB(unsigned int nbloques, unsigned int ninodos);//Función que inicializa el super bloque
+int initMB();//Función que inicializa el mapa de bits 
+int initAI();//Función que inicializa el array de inodos 
+int escribir_bit(unsigned int nbloque, unsigned int bit);//Función que permite escribit 1 bit en 1 bloque 
+char leer_bit(unsigned int nbloque); //Función que permite leer 1 bit de un bloque
+int reservar_bloque();
+int liberar_bloque(unsigned int nbloque);
+int escribir_inodo(unsigned int ninodo, struct inodo *inodo);
+int leer_inodo(unsigned int ninodo, struct inodo *inodo);
+int reservar_inodo(unsigned char tipo, unsigned char permisos);
