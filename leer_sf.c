@@ -6,6 +6,7 @@ Carlos López Mihi
 
 #include "fichero_basico.h"
 
+
 int main(int argc, char **argv)
 {
 
@@ -19,29 +20,9 @@ int main(int argc, char **argv)
     struct inodo inodo;
     int ninodo=0;
 
-    int fs = open(argv[1], O_RDONLY);
 
-    // Abrimos nuestro fichero donde se "almacena" el disco virtual//
-    if (fs == FALLO)
-    {
-        perror(RED "Error al abrir el disco virtual");
-        printf(RESET);
-        return FALLO;
-    }
-
-    // leemos el superbloque //
-    if (read(fs, &SB, BLOCKSIZE) == FALLO)
-    {
-        perror(RED "Error al leer el SB");
-        printf(RESET);
-        return FALLO;
-    }
-
-    if(close(fs)==FALLO){
-        perror(RED "Error ");
-        printf(RESET);
-        return FALLO;
-    }
+    bmount(argv[1]);
+    bread(posSB,&SB);
 
     // imprimimos los datos del superbloque//
     printf(BLUE "****DATOS DEL SUPER BLOQUE****\n\n");
@@ -74,24 +55,72 @@ int main(int argc, char **argv)
    int posbyteAjustado;
    int posbit;
    int nbloqueabs;
+   int nbloqueMB;
     fprintf(stderr, BLUE "****Primer y ultimo bit del MB de cada zona del dispositivo****\n\n");
     leer_bit(0);
-/*
-    nbloqueabs = SB.posPrimerBloqueMB + posSB;
 
-    //leemos primer bit SB
-    fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:0, posbyte (ajustado): , posbit:0, nbloqueMB:%d, nbloqueabs:%d)]\n",posSB,posSB,nbloqueabs);
+     // primer bit SB
+    nbloqueabs = SB.posPrimerBloqueMB + posSB;
+    posbyte =  posSB / 8;
+    posbit = posSB % 8;
+    nbloqueMB = posbyte / BLOCKSIZE;
+   
+    fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",posSB,posbyte,posbit,nbloqueMB,nbloqueabs);
     fprintf(stderr, BLUE "posSB: %d → leer_bit(%d) = %d\n",posSB, posSB,leer_bit(0));
 
+    //primer bit MB
     nbloqueabs = SB.posPrimerBloqueMB + posSB;
     posbyte =  SB.posPrimerBloqueMB / 8;
     posbit = SB.posPrimerBloqueMB % 8;
+    nbloqueMB = posbyte / BLOCKSIZE;
 
-    //primer bit MB
-    fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posPrimerBloqueMB,posbyte,posbit,SB.posPrimerBloqueMB/BLOCKSIZE,nbloqueabs);
+    fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posPrimerBloqueMB,posbyte,posbit,nbloqueMB,nbloqueabs);
     fprintf(stderr, BLUE "SB.posPrimerBloqueMB: %d → leer_bit(%d) = %d\n",SB.posPrimerBloqueMB,SB.posPrimerBloqueMB ,leer_bit(SB.posPrimerBloqueMB));
 
- 
+    //ultimo bit MB
+    nbloqueabs = SB.posPrimerBloqueMB + SB.posUltimoBloqueMB;
+    posbyte =  SB.posUltimoBloqueMB / 8;
+    posbit = SB.posUltimoBloqueMB % 8;
+    nbloqueMB = posbyte / BLOCKSIZE;
+
+    fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posUltimoBloqueMB,posbyte,posbit,nbloqueMB,nbloqueabs);
+    fprintf(stderr, BLUE "SB.posUltimoBloqueMB: %d → leer_bit(%d) = %d\n",SB.posUltimoBloqueMB,SB.posUltimoBloqueMB ,leer_bit(SB.posUltimoBloqueMB));
+
+    //primer bit AI
+    nbloqueabs = SB.posPrimerBloqueMB + SB.posPrimerBloqueAI;
+    posbyte =  SB.posPrimerBloqueAI / 8;
+    posbit = SB.posPrimerBloqueAI % 8;
+    nbloqueMB = posbyte / BLOCKSIZE;
+   
+    fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posPrimerBloqueAI,posbyte,posbit,nbloqueMB,nbloqueabs);
+    fprintf(stderr, BLUE "SB.posPrimerBloqueAI: %d → leer_bit(%d) = %d\n",SB.posPrimerBloqueAI,SB.posPrimerBloqueAI ,leer_bit(SB.posPrimerBloqueAI));
+
+    //ultimo bit AI
+  
+    posbyte =  SB.posUltimoBloqueAI / 8;
+    nbloqueabs =posbyte%1024;
+    posbit = SB.posUltimoBloqueAI % 8;
+    nbloqueMB = posbyte / BLOCKSIZE;
+    fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posUltimoBloqueAI,posbyte,posbit,nbloqueMB,nbloqueabs);
+    fprintf(stderr, BLUE "SB.posUltimoBloqueAI: %d → leer_bit(%d) = %d\n",SB.posUltimoBloqueAI,SB.posUltimoBloqueAI ,leer_bit(SB.posUltimoBloqueAI));
+
+    //primer bit bloqueDatos
+    nbloqueabs = (SB.posPrimerBloqueMB + SB.posPrimerBloqueDatos)/1024;
+    posbyte =  SB.posPrimerBloqueDatos / 8;
+    posbit = SB.posPrimerBloqueDatos % 8;
+    nbloqueMB = posbyte / BLOCKSIZE;
+
+    fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posPrimerBloqueDatos,posbyte,posbit,nbloqueMB,nbloqueabs);
+    fprintf(stderr, BLUE "SB.posPrimerBloqueDatos: %d → leer_bit(%d) = %d\n",SB.posPrimerBloqueDatos,SB.posPrimerBloqueDatos ,leer_bit(SB.posPrimerBloqueDatos));
+    
+    //ultimo bit bloqueDatos
+    nbloqueabs = (SB.posUltimoBloqueDatos / 8)%1024;
+    posbyte =  SB.posUltimoBloqueDatos / 8;
+    posbit = SB.posUltimoBloqueDatos % 8;
+    nbloqueMB = posbyte / BLOCKSIZE;
+
+    fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posUltimoBloqueDatos,posbyte,posbit,nbloqueMB,nbloqueabs);
+    fprintf(stderr, BLUE "SB.posUltimoBloqueDatos: %d → leer_bit(%d) = %d\n\n",SB.posUltimoBloqueDatos,SB.posUltimoBloqueDatos ,leer_bit(SB.posUltimoBloqueDatos));
 
     leer_inodo(ninodo, &inodo);
     ts = localtime(&inodo.atime);
@@ -103,6 +132,6 @@ int main(int argc, char **argv)
     ts = localtime(&inodo.btime);
     strftime(ctime, sizeof(btime), "%a %Y-%m-%d %H:%M:%S", ts);
     printf("ID: %d ATIME: %s MTIME: %s CTIME: %s BTIME: %s\\n", ninodo, atime, mtime, ctime, btime);
-*/
+
     printf(RESET);
 }
