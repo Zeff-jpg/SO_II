@@ -60,64 +60,64 @@ int main(int argc, char **argv)
     leer_bit(0);
 
      // primer bit SB
-    nbloqueabs = SB.posPrimerBloqueMB + posSB;
     posbyte =  posSB / 8;
     posbit = posSB % 8;
     nbloqueMB = posbyte / BLOCKSIZE;
+    nbloqueabs = SB.posPrimerBloqueMB +nbloqueMB;
    
     fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",posSB,posbyte,posbit,nbloqueMB,nbloqueabs);
     fprintf(stderr, BLUE "posSB: %d → leer_bit(%d) = %d\n",posSB, posSB,leer_bit(0));
 
     //primer bit MB
-    nbloqueabs = SB.posPrimerBloqueMB + posSB;
     posbyte =  SB.posPrimerBloqueMB / 8;
     posbit = SB.posPrimerBloqueMB % 8;
     nbloqueMB = posbyte / BLOCKSIZE;
+    nbloqueabs = SB.posPrimerBloqueMB +nbloqueMB;
 
     fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posPrimerBloqueMB,posbyte,posbit,nbloqueMB,nbloqueabs);
     fprintf(stderr, BLUE "SB.posPrimerBloqueMB: %d → leer_bit(%d) = %d\n",SB.posPrimerBloqueMB,SB.posPrimerBloqueMB ,leer_bit(SB.posPrimerBloqueMB));
 
     //ultimo bit MB
-    nbloqueabs = SB.posPrimerBloqueMB + SB.posUltimoBloqueMB;
     posbyte =  SB.posUltimoBloqueMB / 8;
     posbit = SB.posUltimoBloqueMB % 8;
     nbloqueMB = posbyte / BLOCKSIZE;
+    nbloqueabs = SB.posPrimerBloqueMB +nbloqueMB;
 
     fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posUltimoBloqueMB,posbyte,posbit,nbloqueMB,nbloqueabs);
     fprintf(stderr, BLUE "SB.posUltimoBloqueMB: %d → leer_bit(%d) = %d\n",SB.posUltimoBloqueMB,SB.posUltimoBloqueMB ,leer_bit(SB.posUltimoBloqueMB));
 
     //primer bit AI
-    nbloqueabs = SB.posPrimerBloqueMB + SB.posPrimerBloqueAI;
     posbyte =  SB.posPrimerBloqueAI / 8;
     posbit = SB.posPrimerBloqueAI % 8;
     nbloqueMB = posbyte / BLOCKSIZE;
+    nbloqueabs = SB.posPrimerBloqueMB +nbloqueMB;
    
     fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posPrimerBloqueAI,posbyte,posbit,nbloqueMB,nbloqueabs);
     fprintf(stderr, BLUE "SB.posPrimerBloqueAI: %d → leer_bit(%d) = %d\n",SB.posPrimerBloqueAI,SB.posPrimerBloqueAI ,leer_bit(SB.posPrimerBloqueAI));
 
     //ultimo bit AI
-  
     posbyte =  SB.posUltimoBloqueAI / 8;
-    nbloqueabs =posbyte%1024;
     posbit = SB.posUltimoBloqueAI % 8;
     nbloqueMB = posbyte / BLOCKSIZE;
+    nbloqueabs = SB.posPrimerBloqueMB +nbloqueMB;
+
     fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posUltimoBloqueAI,posbyte,posbit,nbloqueMB,nbloqueabs);
     fprintf(stderr, BLUE "SB.posUltimoBloqueAI: %d → leer_bit(%d) = %d\n",SB.posUltimoBloqueAI,SB.posUltimoBloqueAI ,leer_bit(SB.posUltimoBloqueAI));
 
     //primer bit bloqueDatos
-    nbloqueabs = (SB.posPrimerBloqueMB + SB.posPrimerBloqueDatos)/1024;
     posbyte =  SB.posPrimerBloqueDatos / 8;
     posbit = SB.posPrimerBloqueDatos % 8;
     nbloqueMB = posbyte / BLOCKSIZE;
+    nbloqueabs = SB.posPrimerBloqueMB +nbloqueMB;
 
     fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posPrimerBloqueDatos,posbyte,posbit,nbloqueMB,nbloqueabs);
     fprintf(stderr, BLUE "SB.posPrimerBloqueDatos: %d → leer_bit(%d) = %d\n",SB.posPrimerBloqueDatos,SB.posPrimerBloqueDatos ,leer_bit(SB.posPrimerBloqueDatos));
     
     //ultimo bit bloqueDatos
-    nbloqueabs = (SB.posUltimoBloqueDatos / 8)%1024;
     posbyte =  SB.posUltimoBloqueDatos / 8;
     posbit = SB.posUltimoBloqueDatos % 8;
     nbloqueMB = posbyte / BLOCKSIZE;
+    nbloqueabs = SB.posPrimerBloqueMB +nbloqueMB;
 
     fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado): , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posUltimoBloqueDatos,posbyte,posbit,nbloqueMB,nbloqueabs);
     fprintf(stderr, BLUE "SB.posUltimoBloqueDatos: %d → leer_bit(%d) = %d\n\n",SB.posUltimoBloqueDatos,SB.posUltimoBloqueDatos ,leer_bit(SB.posUltimoBloqueDatos));

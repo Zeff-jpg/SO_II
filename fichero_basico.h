@@ -8,6 +8,12 @@ Carlos López Mihi
 #define posSB 0 // el superbloque se escribe en el primer bloque de nuestro FS
 #define tamSB 1
 #define INODOSIZE 128 // tamaño en bytes de un inodo
+#define DIRECTOS 12
+#define NPUNTEROS 256
+#define INDIRECTOS0 (DIRECTOS + NPUNTEROS)  // 268
+#define INDIRECTOS1 (INDIRECTOS0 + NPUNTEROS * NPUNTEROS)  // 65.804
+#define INDIRECTOS2 (INDIRECTOS1 + NPUNTEROS * NPUNTEROS * NPUNTEROS)  // 16.843.020
+
 #include <limits.h>
 
 ////////////////////////////////*STRUCTS*////////////////////////////////
