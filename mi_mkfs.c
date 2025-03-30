@@ -41,9 +41,7 @@ int main(int argc, char **argv){
     initMB();
 
     //Reservamos un inodo
-    reservar_inodo ('d', 7);
-
-   
+   // reservar_inodo ('d', 7);
     //Desmontamos el disco//
     bumount();
     return 0;

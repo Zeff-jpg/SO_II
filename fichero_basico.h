@@ -13,7 +13,8 @@ Carlos López Mihi
 #define INDIRECTOS0 (DIRECTOS + NPUNTEROS)  // 268
 #define INDIRECTOS1 (INDIRECTOS0 + NPUNTEROS * NPUNTEROS)  // 65.804
 #define INDIRECTOS2 (INDIRECTOS1 + NPUNTEROS * NPUNTEROS * NPUNTEROS)  // 16.843.020
-
+#define DEBUGN3 0
+#define DEBUGN4 1
 #include <limits.h>
 
 ////////////////////////////////*STRUCTS*////////////////////////////////
@@ -86,3 +87,6 @@ int liberar_bloque(unsigned int nbloque);
 int escribir_inodo(unsigned int ninodo, struct inodo *inodo);
 int leer_inodo(unsigned int ninodo, struct inodo *inodo);
 int reservar_inodo(unsigned char tipo, unsigned char permisos);
+int obtener_nRangoBL(struct inodo *inodo, unsigned int nblogico, unsigned int *ptr);
+int obtener_indice(unsigned int nblogico, int nivel_punteros);
+int traducir_bloque_inodo(unsigned int ninodo, unsigned int nblogico, unsigned char reservar);
