@@ -12,14 +12,12 @@ int main(int argc, char **argv)
 
     struct superbloque SB;
     struct tm *ts;
+    struct inodo inodo;
     char atime[80];
     char mtime[80];
     char ctime[80];
     char btime[80];
-
-    struct inodo inodo;
-    int ninodo=0;
-
+    int ninodo;
 
     bmount(argv[1]);
     bread(posSB,&SB);
@@ -52,8 +50,10 @@ int main(int argc, char **argv)
     int bloqueliberado = reservar_bloque();
     printf( "****RESERVAMOS UN BLOQUE PARA LUEGO LIBERARLO****\n");
     printf("Hemos reservado el bloque n:%d\n",bloqueliberado);
+    bread(posSB,&SB);
     printf("SB.cantBloquesLibres: %d\n",SB.cantBloquesLibres);
     liberar_bloque(bloqueliberado);
+    bread(posSB,&SB);
     printf("Liberamos el bloque -> SB.cantBloquesLibres: %d\n\n",SB.cantBloquesLibres);
 
    int posbyte;
@@ -61,7 +61,8 @@ int main(int argc, char **argv)
    int posbit;
    int nbloqueabs;
    int nbloqueMB;
-    fprintf(stderr, BLUE "****MAPA DE BITS CON BLOQUES DE METADATOS OCUPADOS****\n\n");
+
+   fprintf(stderr, BLUE "****MAPA DE BITS CON BLOQUES DE METADATOS OCUPADOS****\n\n");
 
      // primer bit SB
     posbyte =  posSB / 8;
@@ -71,7 +72,9 @@ int main(int argc, char **argv)
     nbloqueabs = SB.posPrimerBloqueMB +nbloqueMB;
    
     fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado):%d , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",posSB,posbyte,posbyteAjustado,posbit,nbloqueMB,nbloqueabs);
-    fprintf(stderr, BLUE "posSB: %d → leer_bit(%d) = %d\n",posSB, posSB,leer_bit(0));
+    fprintf(stderr, BLUE "posSB: %d → leer_bit(%d) = %d\n",posSB, posSB,leer_bit(posSB));
+
+
 
     //primer bit MB
     posbyte =  SB.posPrimerBloqueMB / 8;
@@ -124,14 +127,17 @@ int main(int argc, char **argv)
     fprintf(stderr, BLUE "SB.posPrimerBloqueDatos: %d → leer_bit(%d) = %d\n",SB.posPrimerBloqueDatos,SB.posPrimerBloqueDatos ,leer_bit(SB.posPrimerBloqueDatos));
     
     //ultimo bit bloqueDatos
-    // posbyte = SB.posUltimoBloqueDatos / 8;
-    // posbit = SB.posUltimoBloqueDatos % 8;
+    posbyte = SB.posUltimoBloqueDatos / 8;
+    posbit = SB.posUltimoBloqueDatos % 8;
     posbyteAjustado= posbyte%BLOCKSIZE;
     nbloqueMB = posbyte / BLOCKSIZE;
     nbloqueabs = SB.posPrimerBloqueMB +nbloqueMB;
 
     fprintf(stderr, GRAY "[leer_bit(%d)→ posbyte:%d, posbyte (ajustado):%d , posbit:%d, nbloqueMB:%d, nbloqueabs:%d)]\n",SB.posUltimoBloqueDatos,posbyte,posbyteAjustado,posbit,nbloqueMB,nbloqueabs);
-    fprintf(stderr, BLUE "SB.posUltimoBloqueDatos: %d → leer_bit(%d) = %d\n\n",SB.posUltimoBloqueDatos,SB.posUltimoBloqueDatos ,leer_bit(SB.posUltimoBloqueDatos));
+    //fprintf(stderr, BLUE "SB.posUltimoBloqueDatos: %d → leer_bit(%d) = %d\n\n",SB.posUltimoBloqueDatos,SB.posUltimoBloqueDatos ,leer_bit(SB.posUltimoBloqueDatos));
+
+   
+    ninodo=0;
 
     fprintf(stderr, BLUE "****DATOS DEL DIRECTORIO RAIZ****\n");
     leer_inodo(ninodo, &inodo);
@@ -150,15 +156,20 @@ int main(int argc, char **argv)
     printf(RESET);
     #endif
 
-        reservar_inodo('f',6);
-        ninodo=2;
+        
+    #if DEBUGN3   
+        ninodo= reservar_inodo('f',6);
+        bread(posSB,&SB);
+        printf(BLUE "INODO %d TRADUCCION DE LOS BLOQUES LOGICOS 8, 204, 30.004, 400.004 y 468.750\n",ninodo);
         traducir_bloque_inodo(ninodo,8,'1');
+        printf("\n");
+        traducir_bloque_inodo(ninodo,204,'1');
         printf("\n");
         traducir_bloque_inodo(ninodo,30004,'1');
         printf("\n");
         traducir_bloque_inodo(ninodo,400004,'1');
         printf("\n");
-        traducir_bloque_inodo(ninodo,468765,'1');
+        traducir_bloque_inodo(ninodo,468750,'1');
         printf("\n");
        
         printf(BLUE "****DATOS DEL INODO RESERVADO RAIZ****\n");
@@ -178,7 +189,7 @@ int main(int argc, char **argv)
         printf("SB.posPrimerInodoLibre:%d\n",SB.posPrimerInodoLibre);    
     
         printf(RESET);
-        
-  
+    #endif    
+   
     bumount();
 }

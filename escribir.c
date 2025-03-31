@@ -1,6 +1,3 @@
-
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,17 +20,17 @@ int main(int argc, char **argv) {
 
     char *texto = argv[2];
     int diferentes_inodos = atoi(argv[3]);
-    
+   
     if (bmount(argv[1]) == FALLO) {
         fprintf(stderr, "Error al montar el dispositivo\n");
         return FALLO;
     }
 
     int tamText = strlen(texto);
+    printf(BLUE"Longuitud del texto: %d\n", tamText);    
     int ninodo;
     struct STAT stat;
-     char bufferTexto[tamText];
-    memset(bufferTexto, 0, sizeof(bufferTexto));
+    char bufferTexto[tamText];
     strcpy(bufferTexto, texto);
 
     if (diferentes_inodos == 0) {
@@ -45,13 +42,15 @@ int main(int argc, char **argv) {
             bumount();
             return FALLO;
         }
-        printf(BLUE"num inodo reservado: %d\n", ninodo);
-
         for (int i = 0; i < 5; i++) {
+            printf(BLUE"Num inodo reservado: %d\n", ninodo);
             printf(BLUE"offset: %u\n", OFFSETS[i]);
-            
             // Escribir el texto en el offset actual
             int bytesEscritos = mi_write_f(ninodo, bufferTexto, OFFSETS[i], tamText);
+            char buffer_test[tamText];
+            memset(buffer_test, 0, tamText);
+            int bytes_leidos = mi_read_f(ninodo, buffer_test, OFFSETS[i], tamText);
+
             if (bytesEscritos == FALLO) {
                 fprintf(stderr, RED "Error al escribir en el inodo\n");
                 printf(RESET);
@@ -65,7 +64,7 @@ int main(int argc, char **argv) {
                 printf(RESET);
             }
             printf(BLUE"stat.tamEnBytesLog=%d\n", stat.tamEnBytesLog);
-            printf(BLUE"stat.numBloquesOcupados=%d\n", stat.numBloquesOcupados);
+            printf(BLUE"stat.numBloquesOcupados=%d\n\n", stat.numBloquesOcupados);
             printf(RESET);
         }
     } else {
@@ -94,7 +93,7 @@ int main(int argc, char **argv) {
                 printf(RESET);
             }
             printf(BLUE"stat.tamEnBytesLog=%u\n", stat.tamEnBytesLog);
-            printf("stat.numBloquesOcupados=%u\n", stat.numBloquesOcupados);
+            printf("stat.numBloquesOcupados=%u\n\n", stat.numBloquesOcupados);
             printf(RESET);
         }
     }

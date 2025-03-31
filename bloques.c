@@ -4,7 +4,7 @@ Carlos López Mihi
 *****
 */
 #include "bloques.h"
-static int descriptor = 0;
+static int descriptor = -1;
 
 /*Función para montar el dispositivo virtual*/
 
@@ -12,7 +12,6 @@ int bmount(const char *camino)
 {
     umask(0111);
     descriptor = open(camino, O_RDWR | O_CREAT, 0666);
-    chmod (camino, 0666);
 
     if (descriptor == FALLO)
     {
@@ -20,6 +19,8 @@ int bmount(const char *camino)
         printf(RESET);
         return FALLO;
     };
+
+    fchmod(descriptor, 0666);
     return descriptor;
 }
 
@@ -38,8 +39,9 @@ int bumount(){
 /*Función para escribir en un bloque del dispositivo virtual*/
 int bwrite(unsigned int nbloque, const void *buf){
 
+    off_t desplazamiento = nbloque * BLOCKSIZE;
     /*posicionamos el puntero para escribir con lseek*/
-    if(lseek(descriptor,nbloque * BLOCKSIZE,SEEK_SET)==FALLO){
+    if(lseek(descriptor,desplazamiento,SEEK_SET)==FALLO){
         perror(RED "Error");
         printf(RESET);
         return FALLO;
@@ -59,9 +61,11 @@ int bwrite(unsigned int nbloque, const void *buf){
 /*Función para leer un bloque del dispositivo virtual*/
 int bread(unsigned int nbloque, void *buf){
 /*buf ha de tener el tamaño de un bloque(1024B)*/
-    
+
     /*posicionamos el puntero para leer con lseek*/
-    if(lseek(descriptor,nbloque * BLOCKSIZE,SEEK_SET)==FALLO){
+
+    off_t desplazamiento = nbloque * BLOCKSIZE;
+    if(lseek(descriptor,desplazamiento,SEEK_SET)==FALLO){
         perror(RED "Error");
         printf(RESET);
         return FALLO;
