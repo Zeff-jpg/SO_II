@@ -14,7 +14,8 @@ Carlos López Mihi
 #define INDIRECTOS1 (INDIRECTOS0 + NPUNTEROS * NPUNTEROS)  // 65.804
 #define INDIRECTOS2 (INDIRECTOS1 + NPUNTEROS * NPUNTEROS * NPUNTEROS)  // 16.843.020
 #define DEBUGN3 0
-#define DEBUGN4 1
+#define DEBUGN4 0
+#define DEBUGN6 1
 #include <limits.h>
 
 ////////////////////////////////*STRUCTS*////////////////////////////////

@@ -3,7 +3,7 @@ Alejandro Masmiquel Casado
 Carlos López Mihi
 *****
 */
-#include "fichero_basico.h"
+#include "ficheros.h"
 
 int initSB(unsigned int nbloques, unsigned int ninodos);
 

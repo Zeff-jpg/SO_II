@@ -1,3 +1,8 @@
+/*
+Alejandro Masmiquel Casado
+Carlos López Mihi
+*****
+*/
 #include "ficheros.h"
 
   
@@ -41,10 +46,6 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
         }
 
-        // Escribir lo leído a la salida estándar
-        write(1, buffer_texto, bytesLeidos);    
-        totBytesLeidos += bytesLeidos;
-        offset += tamBuffer;
     } while (bytesLeidos > 0);
 
     // Mostrar estadísticas por stderr para que no afecte a la redirección

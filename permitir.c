@@ -1,3 +1,8 @@
+/*
+Alejandro Masmiquel Casado
+Carlos López Mihi
+*****
+*/
 #include "ficheros.h"
 
 int main(int argc, char **argv) {

@@ -1,8 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <time.h>
+/*
+Alejandro Masmiquel Casado
+Carlos López Mihi
+*****
+*/
+
 #include "ficheros.h"
 
 
@@ -49,8 +50,7 @@ int main(int argc, char **argv) {
             int bytesEscritos = mi_write_f(ninodo, bufferTexto, OFFSETS[i], tamText);
             char buffer_test[tamText];
             memset(buffer_test, 0, tamText);
-            int bytes_leidos = mi_read_f(ninodo, buffer_test, OFFSETS[i], tamText);
-
+            
             if (bytesEscritos == FALLO) {
                 fprintf(stderr, RED "Error al escribir en el inodo\n");
                 printf(RESET);

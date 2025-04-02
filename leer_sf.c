@@ -10,7 +10,9 @@ Carlos López Mihi
 int main(int argc, char **argv)
 {
 
+
     struct superbloque SB;
+    #if DEBUGN3||DEBUGN4
     struct tm *ts;
     struct inodo inodo;
     char atime[80];
@@ -18,6 +20,7 @@ int main(int argc, char **argv)
     char ctime[80];
     char btime[80];
     int ninodo;
+   #endif
 
     bmount(argv[1]);
     bread(posSB,&SB);
@@ -46,7 +49,7 @@ int main(int argc, char **argv)
    
 
     #if DEBUGN3
-
+   
     int bloqueliberado = reservar_bloque();
     printf( "****RESERVAMOS UN BLOQUE PARA LUEGO LIBERARLO****\n");
     printf("Hemos reservado el bloque n:%d\n",bloqueliberado);
@@ -157,7 +160,7 @@ int main(int argc, char **argv)
     #endif
 
         
-    #if DEBUGN3   
+    #if DEBUGN4   
         ninodo= reservar_inodo('f',6);
         bread(posSB,&SB);
         printf(BLUE "INODO %d TRADUCCION DE LOS BLOQUES LOGICOS 8, 204, 30.004, 400.004 y 468.750\n",ninodo);

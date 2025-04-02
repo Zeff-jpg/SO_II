@@ -1,18 +1,22 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+/*
+Alejandro Masmiquel Casado
+Carlos López Mihi
+*****
+*/
+
 #include "ficheros.h"
+
 
 int main(int argc, char **argv) {
     if (argc != 4) {
         fprintf(stderr, "Sintaxis: truncar <nombre_dispositivo> <ninodo> <nbytes>\n");
-        return -1;
+        return FALLO;
     }
     
     // Montar dispositivo
-    if (bmount(argv[1]) == -1) {
+    if (bmount(argv[1]) == FALLO) {
         fprintf(stderr, "Error al montar el dispositivo\n");
-        return -1;
+        return FALLO;
     }
     
     unsigned int ninodo = atoi(argv[2]);
@@ -28,19 +32,21 @@ int main(int argc, char **argv) {
         
         // Mostrar información del inodo
         struct STAT stat;
-        if (mi_stat_f(ninodo, &stat) == -1) {
+        if (mi_stat_f(ninodo, &stat) == FALLO) {
             fprintf(stderr, "Error al obtener stat del inodo\n");
-            return -1;
+            return FALLO;
         }
+
+        
         
         printf("tamEnBytesLog: %u\n", stat.tamEnBytesLog);
         printf("numBloquesOcupados: %u\n", stat.numBloquesOcupados);
     }
     
     // Desmontar dispositivo
-    if (bumount() == -1) {
+    if (bumount() == FALLO) {
         fprintf(stderr, "Error al desmontar el dispositivo\n");
-        return -1;
+        return FALLO;
     }
     
     return 0;
