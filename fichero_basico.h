@@ -15,7 +15,8 @@ Carlos López Mihi
 #define INDIRECTOS2 (INDIRECTOS1 + NPUNTEROS * NPUNTEROS * NPUNTEROS)  // 16.843.020
 #define DEBUGN3 0
 #define DEBUGN4 0
-#define DEBUGN6 1
+#define DEBUGN5 1
+#define DEBUGN6 0
 #include <limits.h>
 
 ////////////////////////////////*STRUCTS*////////////////////////////////
@@ -93,3 +94,5 @@ int obtener_indice(unsigned int nblogico, int nivel_punteros);
 int traducir_bloque_inodo(unsigned int ninodo, unsigned int nblogico, unsigned char reservar);
 int liberar_inodo(unsigned int ninodo);
 int liberar_bloques_inodo(unsigned int primerBL, struct inodo *inodo);
+int liberar_indirectos_recursivo(unsigned int *nBL, unsigned int primerBL, unsigned int ultimoBL, struct inodo *inodo, int nRangoBL, int nivel_punteros, unsigned int *ptr, int *eof);
+int liberar_directos(unsigned int *nBL, unsigned int ultimoBL, struct inodo *inodo, int *eof);

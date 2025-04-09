@@ -289,6 +289,8 @@ char leer_bit(unsigned int nbloque)
         return FALLO;
     }
 
+      // actualizamos la posicion de byte//
+      posbyte = posbyte % BLOCKSIZE;
     unsigned char mascara = 128;  // 10000000
     mascara >>= posbit;           // desplazamiento de bits a la derecha, los que indique posbit
     mascara &= bufferMB[posbyte]; // operador AND para bits
@@ -587,7 +589,8 @@ int traducir_bloque_inodo(unsigned int ninodo, unsigned int nblogico, unsigned c
     unsigned int ptr = 0, ptr_ant = 0, salvar_inodo = 0;
     int nRangoBL, nivel_punteros, indice;
     unsigned int buffer[NPUNTEROS];
-
+   
+    
     if (leer_inodo(ninodo, &inodo) < 0) return FALLO;
 
     nRangoBL = obtener_nRangoBL(&inodo, nblogico, &ptr);
@@ -606,7 +609,7 @@ int traducir_bloque_inodo(unsigned int ninodo, unsigned int nblogico, unsigned c
 
             if (nivel_punteros == nRangoBL) {
                 inodo.punterosIndirectos[nRangoBL - 1] = ptr;
-                #if DEBUGN4
+                #if DEBUGN4||DEBUGN5
                     fprintf(stderr,GRAY"[traducir_bloque_inodo()→ inodo.punterosIndirectos[%d] = %d (reservado BF %d para punteros_nivel%d)]\n", 
                                         nRangoBL - 1, ptr, ptr, nivel_punteros);
                     printf(RESET);                   
@@ -614,7 +617,7 @@ int traducir_bloque_inodo(unsigned int ninodo, unsigned int nblogico, unsigned c
             } else {
                 buffer[indice] = ptr;
                 if (bwrite(ptr_ant, buffer) < 0) return FALLO;
-                #if DEBUGN4
+                #if DEBUGN4||DEBUGN5
                     fprintf(stderr,GRAY"[traducir_bloque_inodo()→ punteros_nivel%d [%d] = %d (reservado BF %d para punteros_nivel%d)]\n", 
                                         nivel_punteros + 1, indice, ptr, ptr, nivel_punteros);
                                         printf(RESET);           
@@ -641,7 +644,7 @@ int traducir_bloque_inodo(unsigned int ninodo, unsigned int nblogico, unsigned c
 
         if (nRangoBL == 0) {
             inodo.punterosDirectos[nblogico] = ptr;
-            #if DEBUGN4 
+            #if DEBUGN4 ||DEBUGN5
                 fprintf(stderr, GRAY"[traducir_bloque_inodo()→ inodo.punterosDirectos[%d] = %d (reservado BF %d para BL %d)]\n", 
                     nblogico, ptr, ptr, nblogico);
                     printf(RESET);           
@@ -649,7 +652,7 @@ int traducir_bloque_inodo(unsigned int ninodo, unsigned int nblogico, unsigned c
         } else {
             buffer[indice] = ptr;
             if (bwrite(ptr_ant, buffer) < 0) return FALLO;
-            #if DEBUGN4
+            #if DEBUGN4||DEBUGN5
                 fprintf(stderr, GRAY"[traducir_bloque_inodo()→ punteros_nivel1 [%d] = %d (reservado BF %d para BL %d)]\n", 
                    indice, ptr, ptr, nblogico);
                    printf(RESET);           
@@ -716,7 +719,6 @@ int liberar_bloques_inodo(unsigned int primerBL, struct inodo *inodo) {
     }
     
     printf("[liberar_bloques_inodo()\u2192 primer BL: %d, ", primerBL);
-    printf("\u00faltimo BL: %d]\n", ultimoBL);
     
     while (!eof) {
         nRangoBL = obtener_nRangoBL(inodo, nBL, &ptr);

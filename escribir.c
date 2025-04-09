@@ -28,12 +28,13 @@ int main(int argc, char **argv) {
     }
 
     int tamText = strlen(texto);
-    printf(BLUE"Longuitud del texto: %d\n", tamText);    
+    printf(BLUE"Longuitud del texto: %d\n\n", tamText);    
     int ninodo;
     struct STAT stat;
     char bufferTexto[tamText];
+    memset(bufferTexto,0,tamText);
+    
     strcpy(bufferTexto, texto);
-
     if (diferentes_inodos == 0) {
         // Reservar un solo inodo para todos los offsets
         ninodo = reservar_inodo('f', 6);
@@ -48,16 +49,14 @@ int main(int argc, char **argv) {
             printf(BLUE"offset: %u\n", OFFSETS[i]);
             // Escribir el texto en el offset actual
             int bytesEscritos = mi_write_f(ninodo, bufferTexto, OFFSETS[i], tamText);
-            char buffer_test[tamText];
-            memset(buffer_test, 0, tamText);
-            
+
             if (bytesEscritos == FALLO) {
                 fprintf(stderr, RED "Error al escribir en el inodo\n");
                 printf(RESET);
                 return FALLO;
             }
             printf(BLUE"Bytes escritos: %d\n", bytesEscritos);
-
+            
             // Obtener información del inodo
             if (mi_stat_f(ninodo, &stat)) {
                 fprintf(stderr, RED"Error al obtener stat del inodo\n");

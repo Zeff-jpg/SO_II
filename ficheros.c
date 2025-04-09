@@ -21,13 +21,13 @@ int mi_write_f(unsigned int ninodo, const void *buf_original, unsigned int offse
     unsigned int desp2 = (offset + nbytes - 1) % BLOCKSIZE;
 
     unsigned char buf_bloque[BLOCKSIZE];
+    memset(buf_bloque,0,BLOCKSIZE);
     unsigned int nbfisico;
     unsigned int bytes_escritos = 0;
 
     if (primerBL == ultimoBL) {
         nbfisico = traducir_bloque_inodo(ninodo, primerBL, 1);
         if (nbfisico == FALLO) return FALLO;
-
         if (bread(nbfisico, buf_bloque) == FALLO) return FALLO;
         memcpy(buf_bloque + desp1, buf_original, nbytes);
         if (bwrite(nbfisico, buf_bloque) == FALLO) return FALLO;
@@ -36,28 +36,25 @@ int mi_write_f(unsigned int ninodo, const void *buf_original, unsigned int offse
     } else {
         nbfisico = traducir_bloque_inodo(ninodo, primerBL, 1);
         if (nbfisico == FALLO) return FALLO;
-
         if (bread(nbfisico, buf_bloque) == FALLO) return FALLO;
         memcpy(buf_bloque + desp1, buf_original, BLOCKSIZE - desp1);
         if (bwrite(nbfisico, buf_bloque) == FALLO) return FALLO;
-
         bytes_escritos += BLOCKSIZE - desp1;
 
+        //BLOQUES LÓGICOS INTERMEDIOS//
         for (unsigned int bl = primerBL + 1; bl < ultimoBL; bl++) {
             nbfisico = traducir_bloque_inodo(ninodo, bl, 1);
             if (nbfisico == FALLO) return FALLO;
-
             if (bwrite(nbfisico, buf_original + bytes_escritos) == FALLO) return FALLO;
             bytes_escritos += BLOCKSIZE;
         }
 
+        //ÚLTIMO BLOQUE LÓGICO //
         nbfisico = traducir_bloque_inodo(ninodo, ultimoBL, 1);
         if (nbfisico == FALLO) return FALLO;
-
         if (bread(nbfisico, buf_bloque) == FALLO) return FALLO;
-        memcpy(buf_bloque, buf_original + bytes_escritos, desp2 + 1);
+        memcpy(buf_bloque, buf_original + nbytes-desp2-1, desp2 + 1);
         if (bwrite(nbfisico, buf_bloque) == FALLO) return FALLO;
-
         bytes_escritos += desp2 + 1;
     }
 
@@ -77,9 +74,8 @@ int mi_read_f(unsigned int ninodo, void *buf_original, unsigned int offset, unsi
     if (leer_inodo(ninodo, &inodo) == FALLO) return FALLO;
 
     if ((inodo.permisos & 4) != 4) {
-        fprintf(stderr, RED"No hay permisos de escritura\n");
-        fprintf(stderr,RESET);
-        return 0;
+        fprintf(stderr, "No hay permisos de lectura\n");
+        return FALLO;
     }
 
     if (offset >= inodo.tamEnBytesLog) return 0;
