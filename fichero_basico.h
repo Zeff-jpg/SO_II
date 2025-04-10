@@ -16,7 +16,7 @@ Carlos López Mihi
 #define DEBUGN3 0
 #define DEBUGN4 0
 #define DEBUGN5 1
-#define DEBUGN6 0
+#define DEBUGN6 1
 #include <limits.h>
 
 ////////////////////////////////*STRUCTS*////////////////////////////////

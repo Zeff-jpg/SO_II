@@ -585,12 +585,12 @@ int obtener_indice(unsigned int nblogico, int nivel_punteros) {
  * Traduce un bloque lógico a un bloque físico en un inodo.
  */
 int traducir_bloque_inodo(unsigned int ninodo, unsigned int nblogico, unsigned char reservar) {
+
     struct inodo inodo;
     unsigned int ptr = 0, ptr_ant = 0, salvar_inodo = 0;
     int nRangoBL, nivel_punteros, indice;
     unsigned int buffer[NPUNTEROS];
    
-    
     if (leer_inodo(ninodo, &inodo) < 0) return FALLO;
 
     nRangoBL = obtener_nRangoBL(&inodo, nblogico, &ptr);
@@ -602,7 +602,6 @@ int traducir_bloque_inodo(unsigned int ninodo, unsigned int nblogico, unsigned c
             if (reservar == 0) return FALLO;
             ptr = reservar_bloque();
             if (ptr == -1) return FALLO;
-            memset(buffer, 0, BLOCKSIZE);
             inodo.numBloquesOcupados++;
             inodo.ctime = time(NULL);
             salvar_inodo = 1;
@@ -613,7 +612,8 @@ int traducir_bloque_inodo(unsigned int ninodo, unsigned int nblogico, unsigned c
                     fprintf(stderr,GRAY"[traducir_bloque_inodo()→ inodo.punterosIndirectos[%d] = %d (reservado BF %d para punteros_nivel%d)]\n", 
                                         nRangoBL - 1, ptr, ptr, nivel_punteros);
                     printf(RESET);                   
-                #endif               
+                #endif      
+                     
             } else {
                 buffer[indice] = ptr;
                 if (bwrite(ptr_ant, buffer) < 0) return FALLO;
@@ -624,6 +624,7 @@ int traducir_bloque_inodo(unsigned int ninodo, unsigned int nblogico, unsigned c
                 #endif
                 
             }
+            memset(buffer, 0, BLOCKSIZE);
         } else {
             if (bread(ptr, buffer) < 0) return FALLO;
         }
